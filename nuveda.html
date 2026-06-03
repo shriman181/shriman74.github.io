@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nuveda — Hydrogen Intelligence Infrastructure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #04080f;
+    --bg2: #070d18;
+    --bg3: #0b1424;
+    --surface: #0f1c2e;
+    --surface2: #142337;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #e8edf4;
+    --text2: #8fa3bc;
+    --text3: #5a7290;
+    --cyan: #00d4ff;
+    --cyan2: #00a8cc;
+    --cyan-dim: rgba(0,212,255,0.12);
+    --cyan-glow: rgba(0,212,255,0.25);
+    --green: #00e5a0;
+    --green-dim: rgba(0,229,160,0.1);
+    --amber: #f5a623;
+    --amber-dim: rgba(245,166,35,0.1);
+    --grad-cyan: linear-gradient(135deg, #00d4ff 0%, #00a8cc 100%);
+    --grad-green: linear-gradient(135deg, #00e5a0 0%, #00b87d 100%);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ─── NOISE OVERLAY ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 900;
+    padding: 0 48px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(4,8,15,0.8);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    transition: background 0.3s;
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  .logo-mark {
+    width: 36px;
+    height: 36px;
+    position: relative;
+  }
+
+  .logo-text {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  .logo-text span { color: var(--cyan); }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text2);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--cyan); }
+
+  .nav-cta {
+    background: transparent;
+    border: 1px solid var(--cyan);
+    color: var(--cyan) !important;
+    padding: 8px 20px;
+    border-radius: 4px;
+    transition: all 0.2s !important;
+  }
+
+  .nav-cta:hover {
+    background: var(--cyan-dim) !important;
+    color: var(--cyan) !important;
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 120px 48px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .hero-orb-1 {
+    position: absolute;
+    width: 700px;
+    height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%);
+    top: -200px;
+    right: -100px;
+    animation: orb-drift 12s ease-in-out infinite alternate;
+  }
+
+  .hero-orb-2 {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,229,160,0.06) 0%, transparent 70%);
+    bottom: -100px;
+    left: 100px;
+    animation: orb-drift 16s ease-in-out infinite alternate-reverse;
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
+  }
+
+  @keyframes orb-drift {
+    from { transform: translate(0, 0) scale(1); }
+    to { transform: translate(40px, 30px) scale(1.05); }
+  }
+
+  .hero-content {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--cyan-dim);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fade-up 0.8s 0.2s ease forwards;
+  }
+
+  .hero-tag::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--cyan);
+    animation: pulse-dot 2s ease infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  .hero-h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(52px, 7vw, 92px);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fade-up 0.8s 0.4s ease forwards;
+  }
+
+  .hero-h1 .line-1 { display: block; color: var(--text); }
+  .hero-h1 .line-2 {
+    display: block;
+    background: linear-gradient(90deg, var(--cyan) 0%, var(--green) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-h1 .line-3 { display: block; color: var(--text); }
+
+  .hero-sub {
+    max-width: 560px;
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--text2);
+    line-height: 1.7;
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fade-up 0.8s 0.6s ease forwards;
+  }
+
+  .hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    opacity: 0;
+    animation: fade-up 0.8s 0.8s ease forwards;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--grad-cyan);
+    color: #04080f;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    padding: 14px 32px;
+    border-radius: 6px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 0 30px rgba(0,212,255,0.25);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 50px rgba(0,212,255,0.4);
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text2);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .btn-ghost:hover { color: var(--text); }
+  .btn-ghost svg { transition: transform 0.2s; }
+  .btn-ghost:hover svg { transform: translateX(4px); }
+
+  .hero-stats {
+    display: flex;
+    gap: 48px;
+    margin-top: 80px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+    opacity: 0;
+    animation: fade-up 0.8s 1s ease forwards;
+  }
+
+  .stat-item {}
+
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 32px;
+    letter-spacing: -0.03em;
+    color: var(--cyan);
+  }
+
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-top: 4px;
+  }
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── SECTIONS COMMON ─── */
+  section { padding: 120px 48px; }
+
+  .section-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-tag::before {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--cyan);
+  }
+
+  .section-h2 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(36px, 4vw, 56px);
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+
+  .section-desc {
+    font-size: 17px;
+    color: var(--text2);
+    font-weight: 300;
+    max-width: 560px;
+    line-height: 1.7;
+    margin-bottom: 64px;
+  }
+
+  /* ─── PROBLEM SECTION ─── */
+  .problem {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .problem-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .problem-visual {
+    position: relative;
+    height: 400px;
+  }
+
+  .pipeline-viz {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pipeline-viz svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .problem-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .problem-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+
+  .problem-card:hover {
+    border-color: rgba(0,212,255,0.25);
+    transform: translateX(4px);
+  }
+
+  .problem-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 18px;
+  }
+
+  .problem-icon.orange { background: rgba(245,100,50,0.12); }
+  .problem-icon.amber { background: var(--amber-dim); }
+  .problem-icon.cyan { background: var(--cyan-dim); }
+  .problem-icon.green { background: var(--green-dim); }
+
+  .problem-card h4 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .problem-card p {
+    font-size: 13px;
+    color: var(--text3);
+    line-height: 1.6;
+  }
+
+  /* ─── PRODUCT / PLATFORM ─── */
+  .platform { background: var(--bg); }
+
+  .platform-modules {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .module-card {
+    background: var(--bg2);
+    padding: 40px 32px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+    cursor: default;
+  }
+
+  .module-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: transparent;
+    transition: background 0.3s;
+  }
+
+  .module-card:hover { background: var(--surface); }
+  .module-card:hover::before { background: var(--grad-cyan); }
+
+  .module-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 0.08em;
+    margin-bottom: 20px;
+  }
+
+  .module-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+
+  .module-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--text);
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+
+  .module-card p {
+    font-size: 13.5px;
+    color: var(--text3);
+    line-height: 1.65;
+  }
+
+  .module-tag {
+    display: inline-block;
+    margin-top: 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+    color: var(--cyan);
+    background: var(--cyan-dim);
+    border: 1px solid rgba(0,212,255,0.15);
+  }
+
+  /* ─── HOW IT WORKS ─── */
+  .how { background: var(--bg2); }
+
+  .steps-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    position: relative;
+  }
+
+  .steps-container::before {
+    content: '';
+    position: absolute;
+    top: 36px;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--cyan2), var(--green), transparent);
+    opacity: 0.4;
+  }
+
+  .step-item {
+    padding: 0 24px;
+    text-align: center;
+  }
+
+  .step-num {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    border: 1px solid var(--border2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 28px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    color: var(--cyan);
+    background: var(--bg3);
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s;
+  }
+
+  .step-item:hover .step-num {
+    background: var(--cyan-dim);
+    border-color: rgba(0,212,255,0.5);
+    box-shadow: 0 0 30px var(--cyan-glow);
+  }
+
+  .step-item h4 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+
+  .step-item p {
+    font-size: 13px;
+    color: var(--text3);
+    line-height: 1.6;
+  }
+
+  /* ─── MARKET / WHY NOW ─── */
+  .market { background: var(--bg); overflow: hidden; position: relative; }
+
+  .market-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .market-numbers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .market-num-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 24px;
+    transition: border-color 0.3s;
+  }
+
+  .market-num-card:hover { border-color: rgba(0,212,255,0.25); }
+
+  .market-num-card .big-num {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 38px;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .market-num-card .big-num.cyan { color: var(--cyan); }
+  .market-num-card .big-num.green { color: var(--green); }
+  .market-num-card .big-num.amber { color: var(--amber); }
+  .market-num-card .big-num.white { color: var(--text); }
+
+  .market-num-card span {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    display: block;
+  }
+
+  .why-points {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .why-point {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .why-bullet {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--cyan);
+    flex-shrink: 0;
+    margin-top: 7px;
+  }
+
+  .why-point h4 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .why-point p {
+    font-size: 13.5px;
+    color: var(--text3);
+    line-height: 1.6;
+  }
+
+  /* ─── FOUNDER ─── */
+  .founder {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .founder-inner {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .founder-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    position: sticky;
+    top: 100px;
+  }
+
+  .founder-photo-placeholder {
+    width: 100%;
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, var(--bg3) 0%, var(--surface2) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .founder-photo-placeholder::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 60%, var(--surface) 100%);
+  }
+
+  .founder-initials {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 72px;
+    color: rgba(0,212,255,0.2);
+    letter-spacing: -0.04em;
+  }
+
+  .founder-card-info {
+    padding: 28px;
+  }
+
+  .founder-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .founder-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--cyan);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .founder-links {
+    display: flex;
+    gap: 10px;
+  }
+
+  .founder-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text2);
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .founder-link:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+
+  .founder-content {}
+
+  .founder-content .section-tag { margin-bottom: 12px; }
+
+  .founder-content h2 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 42px;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: 32px;
+  }
+
+  .founder-bio {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+
+  .founder-bio p {
+    font-size: 16px;
+    color: var(--text2);
+    line-height: 1.75;
+    font-weight: 300;
+  }
+
+  .founder-bio p strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .founder-milestones {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-left: 1px solid var(--border);
+    padding-left: 32px;
+    margin-left: 8px;
+  }
+
+  .milestone {
+    position: relative;
+    padding-bottom: 32px;
+  }
+
+  .milestone:last-child { padding-bottom: 0; }
+
+  .milestone::before {
+    content: '';
+    position: absolute;
+    left: -37px;
+    top: 6px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--bg2);
+    border: 2px solid var(--cyan);
+  }
+
+  .milestone-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--cyan);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .milestone h4 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .milestone p {
+    font-size: 13px;
+    color: var(--text3);
+    line-height: 1.5;
+  }
+
+  /* ─── CTA ─── */
+  .cta-section {
+    background: var(--bg);
+    padding: 160px 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-glow {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,212,255,0.07) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .cta-section .section-tag {
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+
+  .cta-section .section-tag::before { display: none; }
+
+  .cta-h2 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(40px, 5vw, 68px);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    color: var(--text);
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  .cta-h2 span {
+    background: linear-gradient(90deg, var(--cyan), var(--green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .cta-sub {
+    font-size: 17px;
+    color: var(--text2);
+    font-weight: 300;
+    max-width: 480px;
+    margin: 0 auto 48px;
+    line-height: 1.7;
+    position: relative;
+  }
+
+  .cta-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    position: relative;
+  }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: 1px solid var(--border2);
+    color: var(--text2);
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 14px 32px;
+    border-radius: 6px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover {
+    border-color: rgba(255,255,255,0.25);
+    color: var(--text);
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    padding: 60px 48px 40px;
+  }
+
+  .footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .footer-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 48px;
+  }
+
+  .footer-brand p {
+    font-size: 13px;
+    color: var(--text3);
+    max-width: 280px;
+    line-height: 1.6;
+    margin-top: 12px;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 80px;
+  }
+
+  .footer-col h5 {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 16px;
+  }
+
+  .footer-col ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .footer-col a {
+    font-size: 13px;
+    color: var(--text2);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-col a:hover { color: var(--cyan); }
+
+  .footer-bottom {
+    border-top: 1px solid var(--border);
+    padding-top: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-bottom p {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 0.05em;
+  }
+
+  .footer-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--green);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .footer-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse-dot 2s ease infinite;
+  }
+
+  /* ─── SCROLL REVEAL ─── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* ─── TICKER ─── */
+  .ticker-wrap {
+    overflow: hidden;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 0;
+  }
+
+  .ticker-track {
+    display: flex;
+    gap: 0;
+    animation: ticker 28s linear infinite;
+    width: max-content;
+  }
+
+  .ticker-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 40px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .ticker-item span {
+    color: var(--cyan);
+    font-size: 14px;
+  }
+
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* ─── MOBILE ─── */
+  @media (max-width: 768px) {
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    section { padding: 80px 20px; }
+    .hero { padding: 100px 20px 60px; }
+    .hero-h1 { font-size: 44px; }
+    .hero-stats { gap: 28px; flex-wrap: wrap; }
+    .problem-grid { grid-template-columns: 1fr; gap: 40px; }
+    .problem-visual { height: 200px; }
+    .platform-modules { grid-template-columns: 1fr; }
+    .steps-container { grid-template-columns: 1fr 1fr; gap: 40px; }
+    .steps-container::before { display: none; }
+    .market-inner { grid-template-columns: 1fr; gap: 48px; }
+    .founder-inner { grid-template-columns: 1fr; gap: 40px; }
+    .founder-card { position: static; }
+    .footer-top { flex-direction: column; gap: 40px; }
+    .footer-links { gap: 40px; flex-wrap: wrap; }
+    .cta-section { padding: 100px 20px; }
+    .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <svg class="logo-mark" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="18" cy="18" r="17" stroke="rgba(0,212,255,0.3)" stroke-width="1"/>
+      <circle cx="18" cy="18" r="10" stroke="rgba(0,212,255,0.5)" stroke-width="1"/>
+      <circle cx="18" cy="18" r="4" fill="rgba(0,212,255,0.8)"/>
+      <line x1="18" y1="1" x2="18" y2="8" stroke="rgba(0,212,255,0.5)" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="18" y1="28" x2="18" y2="35" stroke="rgba(0,212,255,0.5)" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="1" y1="18" x2="8" y2="18" stroke="rgba(0,212,255,0.5)" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="28" y1="18" x2="35" y2="18" stroke="rgba(0,212,255,0.5)" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <span class="logo-text">nuv<span>eda</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#platform">Platform</a></li>
+    <li><a href="#market">Why Now</a></li>
+    <li><a href="#founder">Founder</a></li>
+    <li><a href="#contact" class="nav-cta">Get in Touch</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg">
+    <div class="hero-orb-1"></div>
+    <div class="hero-orb-2"></div>
+    <div class="hero-grid"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-tag">Green Hydrogen · Software Infrastructure</div>
+    <h1 class="hero-h1">
+      <span class="line-1">The Intelligence</span>
+      <span class="line-2">Layer for Hydrogen</span>
+      <span class="line-3">Infrastructure.</span>
+    </h1>
+    <p class="hero-sub">Electrolyser performance optimisation, real-time leakage detection, safety incident prediction, and green hydrogen certification — all in one platform built for the next energy transition.</p>
+    <div class="hero-actions">
+      <a href="#contact" class="btn-primary">
+        Request Early Access
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="#platform" class="btn-ghost">
+        See the Platform
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">$75B</div>
+        <div class="stat-label">Green H₂ market by 2032</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">50GW+</div>
+        <div class="stat-label">Electrolyser capacity deployed</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">Zero</div>
+        <div class="stat-label">Dedicated software stack today</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">60%</div>
+        <div class="stat-label">CAGR through decade</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-track">
+    <div class="ticker-item"><span>⬡</span> Electrolyser Optimisation</div>
+    <div class="ticker-item"><span>⬡</span> Leakage Detection</div>
+    <div class="ticker-item"><span>⬡</span> Safety Incident Prediction</div>
+    <div class="ticker-item"><span>⬡</span> Green H₂ Certification</div>
+    <div class="ticker-item"><span>⬡</span> Traceability & Chain of Custody</div>
+    <div class="ticker-item"><span>⬡</span> Distribution Network Monitoring</div>
+    <div class="ticker-item"><span>⬡</span> PEM & ALK Stack Intelligence</div>
+    <div class="ticker-item"><span>⬡</span> Carbon Attribution</div>
+    <!-- duplicate for seamless loop -->
+    <div class="ticker-item"><span>⬡</span> Electrolyser Optimisation</div>
+    <div class="ticker-item"><span>⬡</span> Leakage Detection</div>
+    <div class="ticker-item"><span>⬡</span> Safety Incident Prediction</div>
+    <div class="ticker-item"><span>⬡</span> Green H₂ Certification</div>
+    <div class="ticker-item"><span>⬡</span> Traceability & Chain of Custody</div>
+    <div class="ticker-item"><span>⬡</span> Distribution Network Monitoring</div>
+    <div class="ticker-item"><span>⬡</span> PEM & ALK Stack Intelligence</div>
+    <div class="ticker-item"><span>⬡</span> Carbon Attribution</div>
+  </div>
+</div>
+
+<!-- PROBLEM -->
+<section class="problem" id="problem">
+  <div class="section-inner">
+    <div class="problem-grid">
+      <div>
+        <div class="section-tag reveal">The Gap</div>
+        <h2 class="section-h2 reveal reveal-delay-1">Hydrogen infrastructure<br>is being built blind.</h2>
+        <p class="section-desc reveal reveal-delay-2">Billions are flowing into electrolysers, pipelines, and storage. Yet operators run on spreadsheets, gut feel, and manual inspections. There is no software stack designed for this industry's specific risks and workflows.</p>
+        <div class="problem-cards">
+          <div class="problem-card reveal reveal-delay-2">
+            <div class="problem-icon orange">⚡</div>
+            <div>
+              <h4>Electrolyser Degradation is Invisible</h4>
+              <p>Stack efficiency decays silently. Without real-time monitoring and predictive diagnostics, operators discover faults only after costly production losses.</p>
+            </div>
+          </div>
+          <div class="problem-card reveal reveal-delay-3">
+            <div class="problem-icon amber">🔍</div>
+            <div>
+              <h4>Leaks Are a Safety & Cost Crisis</h4>
+              <p>Hydrogen molecules are the smallest in existence. Distribution network leakage is endemic, undetected for hours, and carries catastrophic safety implications.</p>
+            </div>
+          </div>
+          <div class="problem-card reveal reveal-delay-4">
+            <div class="problem-icon green">📋</div>
+            <div>
+              <h4>Green Certification Has No Infrastructure</h4>
+              <p>Buyers, regulators, and carbon markets need certified green hydrogen provenance. Today there is no trusted, auditable traceability system at scale.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="problem-visual">
+        <div class="pipeline-viz">
+          <svg viewBox="0 0 420 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Pipeline lines -->
+            <path d="M60 190 L160 190" stroke="rgba(0,212,255,0.25)" stroke-width="6" stroke-linecap="round"/>
+            <path d="M200 190 L280 190" stroke="rgba(0,212,255,0.25)" stroke-width="6" stroke-linecap="round"/>
+            <path d="M200 190 L200 100" stroke="rgba(0,212,255,0.2)" stroke-width="4" stroke-linecap="round"/>
+            <path d="M200 190 L200 290" stroke="rgba(0,212,255,0.2)" stroke-width="4" stroke-linecap="round"/>
+            <path d="M280 190 L360 130" stroke="rgba(0,229,160,0.25)" stroke-width="4" stroke-linecap="round"/>
+            <path d="M280 190 L360 250" stroke="rgba(0,229,160,0.25)" stroke-width="4" stroke-linecap="round"/>
+
+            <!-- Electrolyser block -->
+            <rect x="60" y="158" width="100" height="64" rx="8" fill="rgba(0,212,255,0.08)" stroke="rgba(0,212,255,0.35)" stroke-width="1.5"/>
+            <text x="110" y="187" fill="rgba(0,212,255,0.9)" font-size="10" font-family="monospace" text-anchor="middle" letter-spacing="1">ELECTRO</text>
+            <text x="110" y="202" fill="rgba(0,212,255,0.9)" font-size="10" font-family="monospace" text-anchor="middle" letter-spacing="1">LYSER</text>
+
+            <!-- Junction node -->
+            <circle cx="200" cy="190" r="14" fill="rgba(0,212,255,0.1)" stroke="rgba(0,212,255,0.5)" stroke-width="1.5"/>
+            <circle cx="200" cy="190" r="5" fill="rgba(0,212,255,0.7)"/>
+
+            <!-- Distributor node -->
+            <circle cx="280" cy="190" r="12" fill="rgba(0,212,255,0.08)" stroke="rgba(0,212,255,0.3)" stroke-width="1.5"/>
+            <circle cx="280" cy="190" r="4" fill="rgba(0,229,160,0.7)"/>
+
+            <!-- Leak indicator -->
+            <circle cx="240" cy="190" r="20" fill="none" stroke="rgba(245,100,50,0.4)" stroke-width="1" stroke-dasharray="3 3">
+              <animateTransform attributeName="transform" type="rotate" from="0 240 190" to="360 240 190" dur="8s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="240" cy="190" r="4" fill="rgba(245,100,50,0.8)">
+              <animate attributeName="opacity" values="0.8;0.2;0.8" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <text x="255" y="175" fill="rgba(245,100,50,0.8)" font-size="9" font-family="monospace">LEAK?</text>
+
+            <!-- Storage -->
+            <rect x="168" y="68" width="64" height="48" rx="6" fill="rgba(0,212,255,0.06)" stroke="rgba(0,212,255,0.25)" stroke-width="1.2"/>
+            <text x="200" y="89" fill="rgba(0,212,255,0.7)" font-size="9" font-family="monospace" text-anchor="middle">STORAGE</text>
+
+            <!-- End nodes -->
+            <rect x="330" y="108" width="60" height="44" rx="6" fill="rgba(0,229,160,0.07)" stroke="rgba(0,229,160,0.3)" stroke-width="1.2"/>
+            <text x="360" y="128" fill="rgba(0,229,160,0.8)" font-size="9" font-family="monospace" text-anchor="middle">MOBILITY</text>
+            <text x="360" y="141" fill="rgba(0,229,160,0.6)" font-size="8" font-family="monospace" text-anchor="middle">FCEV</text>
+
+            <rect x="330" y="228" width="60" height="44" rx="6" fill="rgba(0,229,160,0.07)" stroke="rgba(0,229,160,0.3)" stroke-width="1.2"/>
+            <text x="360" y="248" fill="rgba(0,229,160,0.8)" font-size="9" font-family="monospace" text-anchor="middle">INDUSTRY</text>
+            <text x="360" y="261" fill="rgba(0,229,160,0.6)" font-size="8" font-family="monospace" text-anchor="middle">AMMONIA</text>
+
+            <!-- Cert badge -->
+            <g transform="translate(168, 258)">
+              <rect width="64" height="48" rx="6" fill="rgba(245,166,35,0.07)" stroke="rgba(245,166,35,0.3)" stroke-width="1.2"/>
+              <text x="32" y="21" fill="rgba(245,166,35,0.8)" font-size="9" font-family="monospace" text-anchor="middle">GREEN</text>
+              <text x="32" y="34" fill="rgba(245,166,35,0.6)" font-size="9" font-family="monospace" text-anchor="middle">CERT ✓</text>
+            </g>
+
+            <!-- Nuveda overlay -->
+            <rect x="80" y="310" width="260" height="52" rx="8" fill="rgba(0,212,255,0.05)" stroke="rgba(0,212,255,0.2)" stroke-width="1" stroke-dasharray="4 4"/>
+            <text x="210" y="333" fill="rgba(0,212,255,0.6)" font-size="9" font-family="monospace" text-anchor="middle" letter-spacing="2">NUVEDA INTELLIGENCE LAYER</text>
+            <text x="210" y="348" fill="rgba(0,212,255,0.35)" font-size="8" font-family="monospace" text-anchor="middle">monitor · predict · certify · optimise</text>
+
+            <!-- Animated data pulse -->
+            <circle cx="160" cy="190" r="3" fill="rgba(0,212,255,0.9)">
+              <animateMotion dur="3s" repeatCount="indefinite" path="M0,0 L120,0"/>
+              <animate attributeName="opacity" values="1;0.3;1" dur="3s" repeatCount="indefinite"/>
+            </circle>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLATFORM -->
+<section class="platform" id="platform">
+  <div class="section-inner">
+    <div class="section-tag reveal">Platform</div>
+    <h2 class="section-h2 reveal reveal-delay-1">Four pillars.<br>One intelligence stack.</h2>
+    <p class="section-desc reveal reveal-delay-2">Nuveda is the first software platform designed ground-up for hydrogen operators — connecting production, distribution, safety, and compliance in a unified data layer.</p>
+
+    <div class="platform-modules reveal reveal-delay-2">
+
+      <div class="module-card">
+        <div class="module-num">01 / 04</div>
+        <div class="module-icon" style="background: rgba(0,212,255,0.1)">⚙️</div>
+        <h3>Electrolyser Performance Intelligence</h3>
+        <p>Real-time monitoring of PEM and alkaline electrolyser stacks. Track stack voltage efficiency, membrane degradation patterns, and energy-per-kg production metrics. Predictive maintenance alerts before costly downtime occurs.</p>
+        <span class="module-tag">PEM · ALK · SOEC</span>
+      </div>
+
+      <div class="module-card">
+        <div class="module-num">02 / 04</div>
+        <div class="module-icon" style="background: rgba(245,100,50,0.1)">🔬</div>
+        <h3>Distribution Leakage Detection</h3>
+        <p>Hydrogen's molecular size makes network leaks nearly impossible to detect without dedicated sensors and AI. Nuveda fuses sensor telemetry, pressure differentials, and flow analytics to localize leaks in near-real-time — before they become incidents.</p>
+        <span class="module-tag" style="color: #f56432; background: rgba(245,100,50,0.1); border-color: rgba(245,100,50,0.2)">Safety Critical</span>
+      </div>
+
+      <div class="module-card">
+        <div class="module-num">03 / 04</div>
+        <div class="module-icon" style="background: rgba(245,166,35,0.1)">🛡️</div>
+        <h3>Safety Incident Prediction</h3>
+        <p>Hydrogen's wide flammability range and invisible flame make safety management non-negotiable. Our ML models ingest operational data, environmental conditions, and historical incident patterns to surface risk scores before events escalate.</p>
+        <span class="module-tag" style="color: var(--amber); background: var(--amber-dim); border-color: rgba(245,166,35,0.2)">Predictive AI</span>
+      </div>
+
+      <div class="module-card">
+        <div class="module-num">04 / 04</div>
+        <div class="module-icon" style="background: rgba(0,229,160,0.1)">🌿</div>
+        <h3>Green H₂ Certification & Traceability</h3>
+        <p>Verify and certify the carbon intensity of every kilogram produced. Nuveda creates an immutable chain-of-custody from renewable electricity input through to end-user delivery — audit-ready for EU, CBAM, and voluntary carbon market requirements.</p>
+        <span class="module-tag" style="color: var(--green); background: var(--green-dim); border-color: rgba(0,229,160,0.2)">EU-Ready · CBAM</span>
+      </div>
+
+      <div class="module-card" style="grid-column: 2 / 4;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;">
+          <div>
+            <div class="module-num">Platform Core</div>
+            <h3>Unified Operator Dashboard</h3>
+            <p>A single pane of glass for hydrogen operations. Real-time plant KPIs, network topology view, incident feed, certification status, and AI-generated operational recommendations — from control room to executive suite.</p>
+            <span class="module-tag">API-First · SCADA Integration · Edge + Cloud</span>
+          </div>
+          <div style="padding: 20px; background: var(--bg3); border-radius: 10px; border: 1px solid var(--border);">
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--surface); border-radius: 6px; border: 1px solid var(--border);">
+                <span style="font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3);">Stack efficiency</span>
+                <span style="font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; color: var(--cyan);">94.2% <span style="font-size: 10px; color: var(--green)">↑ +1.1%</span></span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--surface); border-radius: 6px; border: 1px solid var(--border);">
+                <span style="font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3);">Network leak index</span>
+                <span style="font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; color: var(--green);">0.03% <span style="font-size: 10px; color: var(--green)">✓ Low</span></span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--surface); border-radius: 6px; border: 1px solid var(--border);">
+                <span style="font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3);">Safety risk score</span>
+                <span style="font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; color: var(--amber);">2.1 / 10 <span style="font-size: 10px; color: var(--amber)">Moderate</span></span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--surface); border-radius: 6px; border: 1px solid var(--border);">
+                <span style="font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3);">Cert status</span>
+                <span style="font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; color: var(--green);">Verified ✓</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="section-inner">
+    <div class="section-tag reveal">How It Works</div>
+    <h2 class="section-h2 reveal reveal-delay-1">From raw sensor data<br>to certified insight.</h2>
+    <p class="section-desc reveal reveal-delay-2">Nuveda integrates at the sensor and SCADA layer — no rip-and-replace. We sit above your existing hardware and deliver intelligence.</p>
+
+    <div class="steps-container">
+      <div class="step-item reveal">
+        <div class="step-num">01</div>
+        <h4>Connect</h4>
+        <p>Integrate via OPC-UA, Modbus, REST, or our edge agent. Works with existing SCADA, DCS, and IoT sensors from all major vendors.</p>
+      </div>
+      <div class="step-item reveal reveal-delay-1">
+        <div class="step-num">02</div>
+        <h4>Ingest & Normalise</h4>
+        <p>Multi-source telemetry — pressure, flow, temperature, purity, energy consumption — unified into a hydrogen-specific data model in real time.</p>
+      </div>
+      <div class="step-item reveal reveal-delay-2">
+        <div class="step-num">03</div>
+        <h4>Analyse & Predict</h4>
+        <p>Domain-trained ML models run anomaly detection, degradation forecasting, leak probability scoring, and safety risk assessment continuously.</p>
+      </div>
+      <div class="step-item reveal reveal-delay-3">
+        <div class="step-num">04</div>
+        <h4>Act & Certify</h4>
+        <p>Actionable alerts delivered to operators. Green hydrogen production automatically logged, certified, and made available for regulatory audit.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARKET / WHY NOW -->
+<section class="market" id="market">
+  <div class="section-inner">
+    <div class="market-inner">
+      <div>
+        <div class="section-tag reveal">Why Now</div>
+        <h2 class="section-h2 reveal reveal-delay-1">Infrastructure first.<br>Software second.<br>We're second.</h2>
+        <p class="section-desc reveal reveal-delay-2" style="margin-bottom: 40px;">The global hydrogen build-out is happening now. The hardware is being deployed. But the operational software layer doesn't exist yet. This is the exact moment to establish the category.</p>
+        <div class="why-points reveal reveal-delay-2">
+          <div class="why-point">
+            <div class="why-bullet"></div>
+            <div>
+              <h4>Electrolyser capacity grew 5× in 3 years</h4>
+              <p>From ~10GW in 2022 to 50GW+ by 2025. Hundreds of facilities now need operational software to run efficiently.</p>
+            </div>
+          </div>
+          <div class="why-point">
+            <div class="why-bullet" style="background: var(--green)"></div>
+            <div>
+              <h4>Green certification is becoming mandatory</h4>
+              <p>EU's Carbon Border Adjustment Mechanism (CBAM) and hydrogen standards require provenance proof. Compliance software is now non-optional.</p>
+            </div>
+          </div>
+          <div class="why-point">
+            <div class="why-bullet" style="background: var(--amber)"></div>
+            <div>
+              <h4>Safety incidents are multiplying with scale</h4>
+              <p>More facilities means more risk exposure. Regulators globally are tightening hydrogen safety standards, creating software mandates.</p>
+            </div>
+          </div>
+          <div class="why-point">
+            <div class="why-bullet" style="background: var(--cyan)"></div>
+            <div>
+              <h4>Zero incumbent software vendors</h4>
+              <p>There is no Palantir, Aveva, or Aspen for hydrogen. The category is wide open for a purpose-built platform to define the standard.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="market-numbers reveal reveal-delay-1">
+          <div class="market-num-card">
+            <div class="big-num cyan">$75B</div>
+            <span>Green H₂ market<br>by 2032</span>
+          </div>
+          <div class="market-num-card">
+            <div class="big-num green">60%</div>
+            <span>Projected CAGR<br>2025–2032</span>
+          </div>
+          <div class="market-num-card">
+            <div class="big-num amber">50GW+</div>
+            <span>Electrolyser mfg<br>capacity 2025</span>
+          </div>
+          <div class="market-num-card">
+            <div class="big-num white">0</div>
+            <span>Purpose-built<br>software vendors</span>
+          </div>
+        </div>
+        <div style="margin-top: 20px; padding: 24px; background: var(--surface); border-radius: 12px; border: 1px solid var(--border); border-left: 2px solid var(--cyan);">
+          <p style="font-size: 13px; color: var(--text2); font-style: italic; line-height: 1.7; margin-bottom: 10px;">"The electrolysers market is projected to reach USD 14.48 billion by 2031, driven by rising efficiency, safety, and reliability requirements."</p>
+          <p style="font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); letter-spacing: 0.06em; text-transform: uppercase;">— MarketsandMarkets, 2025</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOUNDER -->
+<section class="founder" id="founder">
+  <div class="section-inner">
+    <div class="founder-inner">
+      <div>
+        <div class="founder-card">
+          <div class="founder-photo-placeholder">
+            <div class="founder-initials">MG</div>
+          </div>
+          <div class="founder-card-info">
+            <div class="founder-name">Mari Ganesh Kumar</div>
+            <div class="founder-title">Founder & CEO, Nuveda</div>
+            <div class="founder-links">
+              <a href="#" class="founder-link">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                LinkedIn
+              </a>
+              <a href="mailto:hello@nuveda.io" class="founder-link">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+                Contact
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="founder-content">
+        <div class="section-tag reveal">Founder</div>
+        <h2 class="reveal reveal-delay-1">Built by someone who knows where the bodies are buried.</h2>
+
+        <div class="founder-bio reveal reveal-delay-2">
+          <p>Mari Ganesh Kumar founded Nuveda with a single conviction: <strong>the hydrogen transition will succeed or fail on the quality of its operational software</strong> — and right now, that software doesn't exist.</p>
+          <p>With a background spanning <strong>industrial IoT, energy systems, and machine learning</strong>, Mari has spent years at the intersection of physical infrastructure and data intelligence. He has worked closely with energy operators, witnessed first-hand the fragility of current monitoring practices, and identified the fundamental gap in the hydrogen software stack.</p>
+          <p>Nuveda is his answer to that gap — a platform built not by software generalists parachuted into energy, but by someone who understands <strong>electrolyser physics, pipeline fluid dynamics, and the regulatory realities</strong> of green hydrogen certification from first principles.</p>
+          <p>"<em>The infrastructure is being welded together right now. Every week that passes without intelligent software is a week of blind operation, missed efficiency, and undetected risk. We're here to change that.</em>"</p>
+        </div>
+
+        <div class="founder-milestones reveal reveal-delay-3">
+          <div class="milestone">
+            <div class="milestone-label">Background</div>
+            <h4>Industrial IoT & Energy Systems</h4>
+            <p>Deep domain expertise in sensor integration, SCADA systems, and operational data infrastructure for energy-intensive industries.</p>
+          </div>
+          <div class="milestone">
+            <div class="milestone-label">Research</div>
+            <h4>Hydrogen Safety & Electrochemistry</h4>
+            <p>Worked directly with hydrogen production facilities to understand degradation mechanisms, safety failure modes, and certification pathways.</p>
+          </div>
+          <div class="milestone">
+            <div class="milestone-label">Now</div>
+            <h4>Building Nuveda</h4>
+            <p>Assembling the first dedicated software intelligence layer for hydrogen infrastructure — starting with pilot programmes across production and distribution operators.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="contact">
+  <div class="cta-glow"></div>
+  <div class="section-tag">Early Access</div>
+  <h2 class="cta-h2">Ready to run hydrogen<br><span>operations intelligently?</span></h2>
+  <p class="cta-sub">We're onboarding a select cohort of hydrogen producers and network operators for our pilot programme. Spots are limited.</p>
+  <div class="cta-actions">
+    <a href="mailto:hello@nuveda.io" class="btn-primary">
+      Apply for Pilot Access
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+    <a href="mailto:hello@nuveda.io" class="btn-secondary">
+      Schedule a Demo
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <span class="logo-text" style="font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px;">nuv<span style="color: var(--cyan);">eda</span></span>
+        <p>The intelligence layer for hydrogen production and distribution. Making the energy transition safer, greener, and provably so.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h5>Platform</h5>
+          <ul>
+            <li><a href="#platform">Electrolyser Intelligence</a></li>
+            <li><a href="#platform">Leakage Detection</a></li>
+            <li><a href="#platform">Safety Prediction</a></li>
+            <li><a href="#platform">Green Certification</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Company</h5>
+          <ul>
+            <li><a href="#founder">About & Founder</a></li>
+            <li><a href="#market">Market Thesis</a></li>
+            <li><a href="mailto:hello@nuveda.io">Contact</a></li>
+            <li><a href="mailto:hello@nuveda.io">Press</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Resources</h5>
+          <ul>
+            <li><a href="#">Documentation</a></li>
+            <li><a href="#">API Reference</a></li>
+            <li><a href="#">Security</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Nuveda. All rights reserved. hello@nuveda.io</p>
+      <div class="footer-badge">Systems Operational</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  revealEls.forEach(el => observer.observe(el));
+
+  // Nav scroll effect
+  const nav = document.querySelector('nav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 60) {
+      nav.style.background = 'rgba(4,8,15,0.95)';
+    } else {
+      nav.style.background = 'rgba(4,8,15,0.8)';
+    }
+  });
+
+  // Smooth scroll for nav links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
